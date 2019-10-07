@@ -17,7 +17,15 @@ con.connect((err) => {
 })
 
 app.get('/', (req, res) => {
-    con.query("SELECT * FROM gifts", function (err, result, fields) {
+    var query = 
+    `SELECT
+        gifts.description AS giftDescription,
+        guest.description AS guestDescription
+        FROM gift_list 
+            INNER JOIN gifts ON gift_list.gift_id = gifts.id
+            INNER JOIN guest ON gift_list.gifted_by = guest.id
+    `
+    con.query(query, function (err, result, fields) {
         if (err) throw err;
         res.status(200).json({
             response: result
@@ -28,10 +36,10 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
     var gift = req.body;
 
-    con.query(`INSERT INTO gifts(description) VALUES ('${gift.description}')`, function (err, result, fields) {
+    con.query(`INSERT INTO gift_list(gift_id) VALUES ('${gift.id}')`, function (err, result, fields) {
         if (err) throw err;
 
-        con.query("SELECT * FROM gifts", function (err, result, fields) {
+        con.query("SELECT * FROM gift_list", function (err, result, fields) {
             if (err) throw err;
             res.status(500).json({
                 response: result
@@ -40,6 +48,7 @@ app.post('/', (req, res) => {
     })
 })
 
+/*
 app.put('/:id', (req, res) => {
 
     var gift = req.body;
@@ -55,13 +64,14 @@ app.put('/:id', (req, res) => {
         });
     })
 })
+*/
 
 app.delete('/:id', (req, res) => {
 
-    con.query(`DELETE FROM gifts WHERE id=(${req.params.id})`, function (err, result, fields) {
+    con.query(`DELETE FROM gift_list WHERE id=(${req.params.id})`, function (err, result, fields) {
         if (err) throw err;
 
-        con.query("SELECT * FROM gifts", function (err, result, fields) {
+        con.query("SELECT * FROM gift_list", function (err, result, fields) {
             if (err) throw err;
             res.status(500).json({
                 response: result
