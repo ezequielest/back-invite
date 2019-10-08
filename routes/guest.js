@@ -19,7 +19,7 @@ con.connect((err) => {
 app.get('/', (req, res) => {
     con.query("SELECT * FROM guest", function (err, result, fields) {
         if (err) throw err;
-        res.status(500).json({
+        res.status(200).json({
             response: result
         })
     });
@@ -28,12 +28,12 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
     var guest = req.body;
 
-    con.query(`INSERT INTO guest(name,lastname) VALUES ('${guest.name}','${guest.lastname}')`, function (err, result, fields) {
+    con.query(`INSERT INTO guest(description) VALUES ('${guest.description}')`, function (err, result, fields) {
         if (err) throw err;
 
         con.query("SELECT * FROM guest", function (err, result, fields) {
             if (err) throw err;
-            res.status(500).json({
+            res.status(200).json({
                 response: result
             })
         });
@@ -42,14 +42,14 @@ app.post('/', (req, res) => {
 
 app.put('/:id', (req, res) => {
 
-    var gift = req.body;
+    var guest = req.body;
 
-    con.query(`UPDATE guest SET name='${gift.name}', lastname='${gift.lastname}'  WHERE id=(${req.params.id})`, function (err, result, fields) {
+    con.query(`UPDATE guest SET description='${guest.description}'  WHERE id=(${req.params.id})`, function (err, result, fields) {
         if (err) throw err;
 
         con.query("SELECT * FROM guest", function (err, result, fields) {
             if (err) throw err;
-            res.status(500).json({
+            res.status(200).json({
                 response: result
             })
         });
@@ -63,7 +63,7 @@ app.delete('/:id', (req, res) => {
 
         con.query("SELECT * FROM guest", function (err, result, fields) {
             if (err) throw err;
-            res.status(500).json({
+            res.status(200).json({
                 response: result
             })
         });
