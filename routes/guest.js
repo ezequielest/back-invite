@@ -1,72 +1,103 @@
 var express = require('express');
-var mysql = require('mysql');
+
 bodyParser = require('body-parser');
 
 var app = express();
 
-var con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root",
-    database: "invite",
-    port: "8889"
-})
-
-con.connect((err) => {
-    if (err) throw err;
-})
+var Guest = require('./../models/guest.model')
 
 app.get('/', (req, res) => {
-    con.query("SELECT * FROM guest", function (err, result, fields) {
-        if (err) throw err;
+
+    Guest.find({},(err,guest) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
         res.status(200).json({
-            response: result
+            response: guest
         })
-    });
+    })
 })
+
 
 app.post('/', (req, res) => {
-    var guest = req.body;
+    var body = req.body;
 
-    con.query(`INSERT INTO guest(description) VALUES ('${guest.description}')`, function (err, result, fields) {
-        if (err) throw err;
-
-        con.query("SELECT * FROM guest", function (err, result, fields) {
-            if (err) throw err;
-            res.status(200).json({
-                response: result
+    const guest = new Guest({ description: body.description, confirmed: 0 });
+    guest.save((err, guestSave) => {
+        if (err) {
+            return res.status(500).json({
+                response: err
             })
-        });
+        }
+
+        res.status(200).json({
+            response: guestSave,
+        })
     })
-})
+});
 
 app.put('/:id', (req, res) => {
+    var body = req.body;
+    var id = req.params.id;
 
-    var guest = req.body;
-
-    con.query(`UPDATE guest SET description='${guest.description}'  WHERE id=(${req.params.id})`, function (err, result, fields) {
-        if (err) throw err;
-
-        con.query("SELECT * FROM guest", function (err, result, fields) {
-            if (err) throw err;
-            res.status(200).json({
-                response: result
+    Guest.findById(id, (err, guest) =>{
+        if (err) {
+            res.status(500).json({
+                response: 'error al buscar guest en la db'
             })
-        });
-    })
+        }
+
+        if (!guest) {
+            res.status(400).json({
+                response: 'guest no encontrado'
+            })
+        }
+
+        //the update use the save
+        guest.description = body.description;
+
+        guest.save((err, guest) => {
+            if (err) {
+                res.status(500).json({
+                    response: 'error al actualizar guest en la db'
+                })
+            }
+            res.status(200).json({
+                resonse: guest,
+                message: 'guest actualizado con exito'
+            })
+
+        })
+
+        
+    });
+
 })
 
 app.delete('/:id', (req, res) => {
+ 
+    var id = req.params.id;
 
-    con.query(`DELETE FROM guest WHERE id=(${req.params.id})`, function (err, result, fields) {
-        if (err) throw err;
-
-        con.query("SELECT * FROM guest", function (err, result, fields) {
-            if (err) throw err;
-            res.status(200).json({
-                response: result
+    Guest.findByIdAndRemove(id,(err,guest) =>{
+        if (err) {
+            res.status(500).json({
+                response: 'error al borrar guest en la db'
             })
-        });
+        }
+
+        if (!guest) {
+            res.status(400).json({
+                response: 'guest no encontrado'
+            })
+        }
+        
+        res.status(200).json({
+            resonse: guest,
+            message: 'guest eliminada con exito'
+        })
     })
     
 })

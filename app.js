@@ -1,5 +1,5 @@
 var express = require('express');
-var mysql = require('mysql');
+var mongoose = require('mongoose');
 
 var app = express();
 
@@ -19,17 +19,11 @@ var appRoutes = require ('./routes/app');
 var giftRoutes = require ('./routes/gift');
 
 //DB conexion
-var con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root",
-    database: "invite",
-    port: "8889"
+mongoose.connect('mongodb://localhost:27017/invite', {useUnifiedTopology: true, useNewUrlParser: true}, (err,res)=> {
+    if (err) throw err;
+    console.log('conexion exitosa a la db');
 })
 
-con.connect((err) => {
-    if (err) throw err;
-})
 
 // support parsing of application/json type post data
 app.use(bodyParser.json());

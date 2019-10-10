@@ -1,72 +1,102 @@
 var express = require('express');
-var mysql = require('mysql');
 bodyParser = require('body-parser');
 
 var app = express();
 
-var con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root",
-    database: "invite",
-    port: "8889"
-})
-
-con.connect((err) => {
-    if (err) throw err;
-})
+var Gift = require('./../models/gift');
 
 app.get('/', (req, res) => {
-    con.query("SELECT * FROM gifts", function (err, result, fields) {
-        if (err) throw err;
+
+    Gift.find({},(err,gift) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
         res.status(200).json({
-            response: result
+            response: gift
         })
-    });
+    })
 })
+
 
 app.post('/', (req, res) => {
-    var gift = req.body;
+    var body = req.body;
 
-    con.query(`INSERT INTO gifts(description) VALUES ('${gift.description}')`, function (err, result, fields) {
-        if (err) throw err;
-
-        con.query("SELECT * FROM gifts", function (err, result, fields) {
-            if (err) throw err;
-            res.status(500).json({
-                response: result
+    const gift = new Gift({ description: body.description });
+    gift.save((err, giftSave) => {
+        if (err) {
+            return res.status(500).json({
+                response: err
             })
-        });
+        }
+
+        res.status(200).json({
+            response: giftSave,
+        })
     })
-})
+});
 
 app.put('/:id', (req, res) => {
+    var body = req.body;
+    var id = req.params.id;
 
-    var gift = req.body;
-
-    con.query(`UPDATE gifts SET description='${gift.description}' WHERE id=(${req.params.id})`, function (err, result, fields) {
-        if (err) throw err;
-
-        con.query("SELECT * FROM gifts", function (err, result, fields) {
-            if (err) throw err;
+    Gift.findById(id, (err, gift) =>{
+        if (err) {
             res.status(500).json({
-                response: result
+                response: 'error al buscar gift en la db'
             })
-        });
-    })
+        }
+
+        if (!gift) {
+            res.status(400).json({
+                response: 'gift no encontrado'
+            })
+        }
+
+        //the update use the save
+        gift.description = body.description;
+
+        gift.save((err, gift) => {
+            if (err) {
+                res.status(500).json({
+                    response: 'error al actualizar gift en la db'
+                })
+            }
+            res.status(200).json({
+                resonse: gift,
+                message: 'gift actualizado con exito'
+            })
+
+        })
+
+        
+    });
+
 })
 
 app.delete('/:id', (req, res) => {
+ 
+    var id = req.params.id;
 
-    con.query(`DELETE FROM gifts WHERE id=(${req.params.id})`, function (err, result, fields) {
-        if (err) throw err;
-
-        con.query("SELECT * FROM gifts", function (err, result, fields) {
-            if (err) throw err;
+    Gift.findByIdAndRemove(id,(err,gift) =>{
+        if (err) {
             res.status(500).json({
-                response: result
+                response: 'error al borrar gift en la db'
             })
-        });
+        }
+
+        if (!gift) {
+            res.status(400).json({
+                response: 'gift no encontrado'
+            })
+        }
+        
+        res.status(200).json({
+            resonse: gift,
+            message: 'gift actualizado con exito'
+        })
     })
     
 })
