@@ -19,6 +19,39 @@ app.get('/', (req, res) => {
     })
 })
 
+/**Public by userId */
+app.get('/', (req, res) => {
+
+    Guest.find({},(err,guest) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
+        res.status(200).json({
+            response: guest
+        })
+    })
+})
+
+app.get('/userId/:id', (req, res) => {
+
+    var userId = req.params.id;
+
+    Guest.find({user: userId},(err,guest) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
+        res.status(200).json({
+            response: guest
+        })
+    })
+})
+
 
 app.post('/', mdAutentication.verificationToken, (req, res) => {
     var body = req.body;

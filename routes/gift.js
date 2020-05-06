@@ -21,6 +21,26 @@ app.get('/', (req, res) => {
     })
 })
 
+/**PUBLIC */
+app.get('/userId/:id', (req, res) => {
+
+    var userId = req.params.id;
+
+    Gift.find({user: userId},(err,gifts) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
+        res.status(200).json({
+            response: gifts
+        })
+    })
+})
+
+
+/**PRIVATE */
 app.get('/userId', mdAutentication.verificationToken, (req, res) => {
 
     var user = req.currentUser;
