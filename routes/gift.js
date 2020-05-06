@@ -3,11 +3,11 @@ bodyParser = require('body-parser');
 
 var app = express();
 
-var Gift = require('./../models/gift');
+var Gift = require('./../models/gift.model');
 
 app.get('/', (req, res) => {
 
-    Gift.find({},(err,gift) => {
+    Gift.find({},(err,gifts) => {
         if (err) {
             res.status(500).json({
                 response: err
@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
         }
 
         res.status(200).json({
-            response: gift
+            response: gifts
         })
     })
 })
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
     var body = req.body;
 
-    const gift = new Gift({ description: body.description });
+    const gift = new Gift({ description: body.description, cant: body.cant });
     gift.save((err, giftSave) => {
         if (err) {
             return res.status(500).json({

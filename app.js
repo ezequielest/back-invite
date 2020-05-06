@@ -1,5 +1,6 @@
 var express = require('express');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser')
 
 var app = express();
 
@@ -12,7 +13,7 @@ app.use(function(req, res, next) {
 });
 
 //import routes
-var giftListRoutes = require ('./routes/gift-list');
+//var giftListRoutes = require ('./routes/gift-list');
 var guestRoutes = require ('./routes/guest');
 var userRoutes = require ('./routes/user');
 var appRoutes = require ('./routes/app');
@@ -25,15 +26,16 @@ mongoose.connect('mongodb://localhost:27017/invite', {useUnifiedTopology: true, 
 })
 
 
-// support parsing of application/json type post data
-app.use(bodyParser.json());
-//support parsing of application/x-www-form-urlencoded post data
-app.use(bodyParser.urlencoded({ extended: true }));
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+ 
+// parse application/json
+app.use(bodyParser.json())
 
 //Routes
-app.use('/gift-list', giftListRoutes);
+//app.use('/gift-list', giftListRoutes);
 app.use('/guest', guestRoutes);
-//app.use('/user', userRoutes);
+app.use('/user', userRoutes);
 app.use('/gift', giftRoutes);
 app.use('/', appRoutes);
 

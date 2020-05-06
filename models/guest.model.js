@@ -1,8 +1,11 @@
 var mongoose = require ('mongoose');
 
-var guestModel = {
-    description: String,
-    confirmed: Number
-}
+var Schema = mongoose.Schema;
+
+var guestModel = new Schema({
+    description: {
+        type: String,
+    }
+});
 
 module.exports = mongoose.model('Guest', guestModel);

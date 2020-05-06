@@ -1,7 +1,4 @@
 var express = require('express');
-
-bodyParser = require('body-parser');
-
 var app = express();
 
 var Guest = require('./../models/guest.model')
@@ -25,7 +22,7 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
     var body = req.body;
 
-    const guest = new Guest({ description: body.description, confirmed: 0 });
+    const guest = new Guest({ description: body.description, cant: body.cant });
     guest.save((err, guestSave) => {
         if (err) {
             return res.status(500).json({
@@ -101,5 +98,4 @@ app.delete('/:id', (req, res) => {
     })
     
 })
-
 module.exports = app;
