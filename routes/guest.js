@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+var mdAutentication = require('../middleware/autentication');
 
 var Guest = require('./../models/guest.model')
 
@@ -19,10 +20,11 @@ app.get('/', (req, res) => {
 })
 
 
-app.post('/', (req, res) => {
+app.post('/', mdAutentication.verificationToken, (req, res) => {
     var body = req.body;
+    var user = req.currentUser;
 
-    const guest = new Guest({ description: body.description, cant: body.cant });
+    const guest = new Guest({ description: body.description, user: user._id });
     guest.save((err, guestSave) => {
         if (err) {
             return res.status(500).json({
@@ -74,7 +76,7 @@ app.put('/:id', (req, res) => {
 
 })
 
-app.delete('/:id', (req, res) => {
+app.delete('/:id',mdAutentication.verificationToken, (req, res) => {
  
     var id = req.params.id;
 

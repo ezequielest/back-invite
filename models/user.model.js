@@ -2,6 +2,12 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
+
+var rolesValidos = {
+    values: ['ADMIN_ROLE', 'USER_ROLE'],
+    message: '{VALUE} no es un rol permitido'
+};
+
 var UserModel = new Schema({
     description: { 
         type: String, 
@@ -16,36 +22,11 @@ var UserModel = new Schema({
         unique: true,
         required: true
     },
-    gifts: [{
-        description: { 
-            type: String, 
-            required: true
-        },
-        gifted: {
-            type: Boolean,
-            default: false
-        },
-        gifted_by: {
-            description: {
-                type: String
-            }
-        }
-    }],
-    guests: [{
-        guest: {
-            type: mongoose.Schema.Types.ObjectId
-        },
-        confirmed: {
-            type: Boolean,
-            default: false
-        },
-        cant: {
-            type: Number
-        },
-        description: {
-            type: String,
-        }
-    }]
+    role: { type: String, 
+        required: true, 
+        default: 'USER_ROLE', 
+        enum: rolesValidos 
+    }
 })
 
 module.exports = mongoose.model('User', UserModel);

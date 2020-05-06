@@ -8,14 +8,13 @@ var GiftModel = new Schema({
         required: true
     },
     gifted_by: {
-        type: String,
-        required: true,
-        default: ""
+        type: Schema.Types.ObjectId,
+        ref: 'Guest'
     },
-    gifted: {
-        type: Boolean,
-        required: true,
-        default: 0
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
 

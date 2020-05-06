@@ -1,11 +1,29 @@
 var express = require('express');
 const bcrypt = require('bcrypt');
-var jwt = require('jsonwebtoken')
+var jwt = require('jsonwebtoken');
 
 var app = express();
 
-var User = require('../models/user.model')
-var Gifts = require('../models/gift.model')
+var User = require('../models/user.model');
+
+app.get('/', (req,res) => {
+    
+    User.find({}, (err,user) => {
+        if (err) {
+            res.status(500).json({
+                response: err,
+                error: true
+            })
+        }
+
+        res.status(200).json({
+            response: 'Lista de usuarios',
+            user: user,
+            error: false
+        })
+        
+    })
+})
 
 app.post('/login', (req, res) => {
     
@@ -61,6 +79,7 @@ app.post('/login', (req, res) => {
 })
 
 //public
+/*
 app.get('/:id', (req, res) => {
     console.log('get user id')
     var id = req.params.id;
@@ -91,9 +110,9 @@ app.get('/:id', (req, res) => {
 
     })
 })
+*/
 
-
-
+/*
 app.get('/', (req, res) => {
     console.log('get user')
     User.find({},(err,user) => {
@@ -119,10 +138,10 @@ function findUser() {
 
         return user
     })
-}
+}*/
 
 
-
+/**create */
 app.post('/', (req, res) => {
     var body = req.body;
 
@@ -156,7 +175,7 @@ app.put('/:id', (req, res) => {
     var body = req.body;
     var id = req.params.id;
 
-    User.findById(id, (err, å) =>{
+    User.findById(id, (err, user) =>{
         if (err) {
             res.status(500).json({
                 response: 'error al buscar guest en la db'
@@ -185,160 +204,9 @@ app.put('/:id', (req, res) => {
             })
 
         })
-
-        
     });
 
 })
-
-
-//update user guest
-app.put('/:id/guest/', (req, res) => {
-    var body = req.body;
-    var id = req.params.id;
-
-    User.findById(id, (err, user) =>{
-        if (err) {
-            res.status(500).json({
-                response: 'error al buscar guest en la db'
-            })
-        }
-
-        if (!user) {
-            res.status(400).json({
-                response: 'guest no encontrado'
-            })
-        }
-
-        //the update use the save
-        //update de guest
-        var guest = {
-            description: body.description,
-            cant: body.cant
-        }
-
-        user.guests.push(guest)
-
-        user.save((err, user) => {
-            if (err) {
-                res.status(500).json({
-                    response: 'error al actualizar guest en la db'
-                })
-            }
-
-            res.status(200).json({
-                response: user,
-                message: 'user actualizado con exito'
-            })
-
-        })
-
-        
-    });
-
-})
-
-
-//update user gift
-app.put('/gift/:id', (req, res) => {
-    var body = req.body;
-    var id = req.params.id;
-
-    console.log("update gift");
-    User.findById(id, (err, user) =>{
-        if (err) {
-            res.status(500).json({
-                response: 'error al buscar guest en la db'
-            })
-        }
-
-        if (!user) {
-            res.status(400).json({
-                response: 'guest no encontrado'
-            })
-        }
-
-        console.log('guest id ', body.guest.id)
-
-        //the update use the save
-        user.gifts.forEach(gift => {
-            if (gift._id == body.gift.id) {
-                gift.gifted = true;
-                gift.gifted_by = body.guest.description;
-            }
-        });
-
-        console.log(user)
-
-        user.save((err, user) => {
-            if (err) {
-                res.status(500).json({
-                    response: 'error al actualizar user gift en la db'
-                })
-            }
-            res.status(200).json({
-                response: user,
-                message: 'user gift actualizado con exito'
-            })
-
-        })
-
-        
-    });
-
-})
-
-//update user gift
-app.put('/gift/free/:id', (req, res) => {
-    var body = req.body;
-    var id = req.params.id;
-
-    console.log("update free gift");
-    console.log(body)
-    console.log(id)
-
-    User.findById(id, (err, user) =>{
-        if (err) {
-            res.status(500).json({
-                response: 'error al buscar guest en la db'
-            })
-        }
-
-        if (!user) {
-            res.status(400).json({
-                response: 'guest no encontrado'
-            })
-        }
-
-        //the update use the save
-        user.gifts.forEach(gift => {
-            if (gift._id == body.id) {
-                gift.gifted = false;
-                gift.gifted_by.description = body.description;
-            }
-        });
-
-        console.log(user)
-
-        user.save((err, user) => {
-            if (err) {
-                res.status(500).json({
-                    response: 'error al actualizar user gift en la db'
-                })
-            }
-            res.status(200).json({
-                response: user,
-                message: 'user gift actualizado con exito'
-            })
-
-        })
-
-        
-    });
-
-})
-
-
 
 
 app.delete('/:id', (req, res) => {
@@ -361,42 +229,6 @@ app.delete('/:id', (req, res) => {
         res.status(200).json({
             resonse: user,
             message: 'user eliminada con exito'
-        })
-    })
-    
-})
-
-app.delete('/:userId/gift/:giftId', (req, res) => {
- 
-    var userId = req.params.userId;
-    var giftId = req.params.giftId;
-
-    User.findOne({_id: userId},(err,user) =>{
-        if (err) {
-            res.status(500).json({
-                response: err
-            })
-        }
-
-        if (!user) {
-            res.status(400).json({
-                response: 'user no encontrado'
-            })
-        }
-        
-        user.gifts = user.gifts.filter((gift)=> gift._id != giftId);
-
-        user.save((err, user) => {
-            if (err) {
-                res.status(500).json({
-                    response: 'error al actualizar user gift en la db'
-                })
-            }
-            res.status(200).json({
-                response: user,
-                message: 'user gift actualizado con exito'
-            })
-
         })
     })
     

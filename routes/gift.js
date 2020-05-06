@@ -1,4 +1,5 @@
 var express = require('express');
+var mdAutentication = require('../middleware/autentication');
 bodyParser = require('body-parser');
 
 var app = express();
@@ -20,11 +21,38 @@ app.get('/', (req, res) => {
     })
 })
 
+app.get('/userId', mdAutentication.verificationToken, (req, res) => {
 
-app.post('/', (req, res) => {
+    var user = req.currentUser;
+
+    Gift.find({user: user._id},(err,gifts) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
+        res.status(200).json({
+            response: gifts
+        })
+    })
+})
+
+
+//payload
+//*description | string
+//get user for token currentUser middleware
+app.post('/', mdAutentication.verificationToken, (req, res) => {
     var body = req.body;
+    
+    var user = req.currentUser;
 
-    const gift = new Gift({ description: body.description, cant: body.cant });
+    const gift = new Gift(
+        { 
+            description: body.description,
+            user: user._id
+        }
+    );
     gift.save((err, giftSave) => {
         if (err) {
             return res.status(500).json({
@@ -38,6 +66,12 @@ app.post('/', (req, res) => {
     })
 });
 
+
+//payload
+//
+//
+//
+//
 app.put('/:id', (req, res) => {
     var body = req.body;
     var id = req.params.id;
@@ -76,7 +110,11 @@ app.put('/:id', (req, res) => {
 
 })
 
-app.delete('/:id', (req, res) => {
+
+//payload
+//*id url
+//*
+app.delete('/:id',mdAutentication.verificationToken, (req, res) => {
  
     var id = req.params.id;
 
