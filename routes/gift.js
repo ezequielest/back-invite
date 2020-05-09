@@ -87,9 +87,6 @@ app.post('/', mdAutentication.verificationToken, (req, res) => {
 });
 
 
-//payload
-//
-//
 //
 //
 app.put('/:id', (req, res) => {
@@ -119,7 +116,7 @@ app.put('/:id', (req, res) => {
                 })
             }
             res.status(200).json({
-                resonse: gift,
+                response: gift,
                 message: 'gift actualizado con exito'
             })
 
@@ -130,10 +127,46 @@ app.put('/:id', (req, res) => {
 
 })
 
+/** public data =
+ * giftedBy: guestSelected,
+ * giftToUpdate: giftSelected 
+ **/
+app.post('/toGift', (req, res) => {
+    var data = req.body;
 
-//payload
-//*id url
-//*
+    Gift.findById(data.giftToUpdate._id, (err, gift) => {
+        if (err) {
+            res.status(500).json({
+                response: 'error al buscar gift en la db'
+            })
+        }
+
+        if (!gift) {
+            res.status(400).json({
+                response: 'gift no encontrado'
+            })
+        }
+
+        //the update use the save
+        console.log('data.giftedBy', data.giftedBy)
+        gift.gifted_by = data.giftedBy._id;
+
+        gift.save((err, gift) => {
+            if (err) {
+                res.status(500).json({
+                    response: 'error al regalar gift'
+                })
+            }
+            res.status(200).json({
+                response: gift,
+                message: 'gift regalado con exito'
+            })
+
+        })
+    })
+
+})
+
 app.delete('/:id',mdAutentication.verificationToken, (req, res) => {
  
     var id = req.params.id;
@@ -152,7 +185,7 @@ app.delete('/:id',mdAutentication.verificationToken, (req, res) => {
         }
         
         res.status(200).json({
-            resonse: gift,
+            response: gift,
             message: 'gift actualizado con exito'
         })
     })

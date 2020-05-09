@@ -10,6 +10,14 @@ var guestModel = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User'
+    },
+    cant: {
+        type: Number,
+        required: true
+    },
+    confirmed: {
+        type: Boolean,
+        default: false
     }
 });
 

@@ -35,6 +35,7 @@ app.get('/', (req, res) => {
     })
 })
 
+/** public */
 app.get('/userId/:id', (req, res) => {
 
     var userId = req.params.id;
@@ -52,12 +53,30 @@ app.get('/userId/:id', (req, res) => {
     })
 })
 
+app.get('/userId', mdAutentication.verificationToken, (req, res) => {
+
+    var userId = req.currentUser._id;
+
+    Guest.find({user: userId},(err,guest) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
+        res.status(200).json({
+            response: guest
+        })
+    })
+})
+
+
 
 app.post('/', mdAutentication.verificationToken, (req, res) => {
     var body = req.body;
     var user = req.currentUser;
 
-    const guest = new Guest({ description: body.description, user: user._id });
+    const guest = new Guest({ description: body.description, user: user._id, cant: body.cant });
     guest.save((err, guestSave) => {
         if (err) {
             return res.status(500).json({
