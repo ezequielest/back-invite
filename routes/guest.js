@@ -20,22 +20,6 @@ app.get('/', (req, res) => {
 })
 
 /**Public by userId */
-app.get('/', (req, res) => {
-
-    Guest.find({},(err,guest) => {
-        if (err) {
-            res.status(500).json({
-                response: err
-            })
-        }
-
-        res.status(200).json({
-            response: guest
-        })
-    })
-})
-
-/** public */
 app.get('/userId/:id', (req, res) => {
 
     var userId = req.params.id;
@@ -76,7 +60,7 @@ app.post('/', mdAutentication.verificationToken, (req, res) => {
     var body = req.body;
     var user = req.currentUser;
 
-    const guest = new Guest({ description: body.description, user: user._id, cant: body.cant });
+    const guest = new Guest({ description: body.description, user: user._id, cant: body.cant, confirmed: body.confirmed });
     guest.save((err, guestSave) => {
         if (err) {
             return res.status(500).json({
@@ -90,7 +74,7 @@ app.post('/', mdAutentication.verificationToken, (req, res) => {
     })
 });
 
-app.put('/:id', (req, res) => {
+app.put('/:id',mdAutentication.verificationToken, (req, res) => {
     var body = req.body;
     var id = req.params.id;
 
@@ -109,6 +93,8 @@ app.put('/:id', (req, res) => {
 
         //the update use the save
         guest.description = body.description;
+        guest.cant = body.cant;
+        guest.confirmed = body.confirmed;
 
         guest.save((err, guest) => {
             if (err) {

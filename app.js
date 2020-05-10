@@ -34,10 +34,10 @@ app.use(bodyParser.json())
 
 //Routes
 //app.use('/gift-list', giftListRoutes);
-app.use('/guest', guestRoutes);
-app.use('/user', userRoutes);
-app.use('/gift', giftRoutes);
-app.use('/', appRoutes);
+app.use('/api/guest', guestRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/gift', giftRoutes);
+app.use('/api/', appRoutes);
 
 var port = 3000;
 app.listen(port, () => {
