@@ -5,7 +5,8 @@ var Schema = mongoose.Schema;
 var guestModel = new Schema({
     description: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     user: {
         type: Schema.Types.ObjectId,

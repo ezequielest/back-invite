@@ -4,7 +4,7 @@ bodyParser = require('body-parser');
 
 var app = express();
 
-var Gift = require('./../models/gift.model');
+var Gift = require('../models/gift.model');
 
 app.get('/', (req, res) => {
 
@@ -66,13 +66,16 @@ app.post('/', mdAutentication.verificationToken, (req, res) => {
     var body = req.body;
     
     var user = req.currentUser;
+    console.log(user)
 
     const gift = new Gift(
         { 
             description: body.description,
-            user: user._id
+            user: user._id,
+            cant: body.cant
         }
     );
+    console.log(gift)
     gift.save((err, giftSave) => {
         if (err) {
             return res.status(500).json({

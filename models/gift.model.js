@@ -5,15 +5,16 @@ var Schema = mongoose.Schema;
 var GiftModel = new Schema({
     description: {
         type: String,
-        required: true
-    },
-    gifted_by: {
-        type: Schema.Types.ObjectId,
-        ref: 'Guest'
+        required: true,
+        unique: true
     },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
+        required: true
+    },
+    cant: {
+        type: Number,
         required: true
     }
 });
