@@ -19,24 +19,6 @@ app.get('/', (req, res) => {
     })
 })
 
-/**Public by userId */
-app.get('/userId/:id', (req, res) => {
-
-    var userId = req.params.id;
-
-    Guest.find({user: userId},(err,guest) => {
-        if (err) {
-            res.status(500).json({
-                response: err
-            })
-        }
-
-        res.status(200).json({
-            response: guest
-        })
-    })
-})
-
 app.get('/userId', mdAutentication.verificationToken, (req, res) => {
 
     var userId = req.currentUser._id;
@@ -138,4 +120,24 @@ app.delete('/:id',mdAutentication.verificationToken, (req, res) => {
     })
     
 })
+
+//PUBLICS
+/**Public by userId */
+app.get('/userId/:id', (req, res) => {
+
+    var userId = req.params.id;
+
+    Guest.find({user: userId},(err,guest) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
+        res.status(200).json({
+            response: guest
+        })
+    })
+})
+
 module.exports = app;

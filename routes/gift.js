@@ -5,6 +5,7 @@ bodyParser = require('body-parser');
 var app = express();
 
 var Gift = require('../models/gift.model');
+var GuestGift = require('../models/guestGift.model');
 
 app.get('/', (req, res) => {
 
@@ -66,7 +67,6 @@ app.post('/', mdAutentication.verificationToken, (req, res) => {
     var body = req.body;
     
     var user = req.currentUser;
-    console.log(user)
 
     const gift = new Gift(
         { 
@@ -75,7 +75,7 @@ app.post('/', mdAutentication.verificationToken, (req, res) => {
             cant: body.cant
         }
     );
-    console.log(gift)
+
     gift.save((err, giftSave) => {
         if (err) {
             return res.status(500).json({
@@ -131,43 +131,38 @@ app.put('/:id', (req, res) => {
 })
 
 /** public data =
- * giftedBy: guestSelected,
- * giftToUpdate: giftSelected 
+ * giftedBy: id,
+ * gift: id 
+ * cant: number,
+ * userID: id,
+ * isMoney: boolean
  **/
 app.post('/toGift', (req, res) => {
     var data = req.body;
 
-    Gift.findById(data.giftToUpdate._id, (err, gift) => {
-        if (err) {
-            res.status(500).json({
-                response: 'error al buscar gift en la db'
+    console.log(data);
+
+    var gustGift = new GuestGift({
+        gifted_by: data.giftedBy,
+        gift: data.gift,
+        cant: data.cant,
+        user: data.user,
+        isMoney: data.isMoney
+    });
+
+    gustGift.save((err, guestGift)=> {
+        if (err){
+            return res.status(200).json({
+                err: err,
+                response: 'error al realizar el regalo'
             })
         }
 
-        if (!gift) {
-            res.status(400).json({
-                response: 'gift no encontrado'
-            })
-        }
-
-        //the update use the save
-        console.log('data.giftedBy', data.giftedBy)
-        gift.gifted_by = data.giftedBy._id;
-
-        gift.save((err, gift) => {
-            if (err) {
-                res.status(500).json({
-                    response: 'error al regalar gift'
-                })
-            }
-            res.status(200).json({
-                response: gift,
-                message: 'gift regalado con exito'
-            })
-
+        res.status(200).json({
+            response: guestGift,
+            message: 'regalo realizado con exito'
         })
-    })
-
+    });
 })
 
 app.delete('/:id',mdAutentication.verificationToken, (req, res) => {
