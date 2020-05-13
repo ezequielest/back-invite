@@ -1,4 +1,3 @@
-
 var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
@@ -20,13 +19,9 @@ var GuestGiftModel = new Schema({
     cant: {
         type: Number,
         required: true
-    },
-    isMoney: {
-        type: Boolean,
-        required: true
     }
 
-});
+})
 
 module.exports = mongoose.model('GuestGift', GuestGiftModel);
 

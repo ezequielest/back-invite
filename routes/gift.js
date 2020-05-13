@@ -6,6 +6,7 @@ var app = express();
 
 var Gift = require('../models/gift.model');
 var GuestGift = require('../models/guestGift.model');
+var Guest = require('../models/guest.model');
 
 app.get('/', (req, res) => {
 
@@ -34,11 +35,38 @@ app.get('/userId/:id', (req, res) => {
             })
         }
 
-        res.status(200).json({
-            response: gifts
+        GuestGift.find({user: userId},(err,guestGifts) => {
+            if (err) {
+                res.status(500).json({
+                    response: err
+                })
+            }
+
+            let giftsAux = gifts.map((gift)=> {
+                let done= guestGifts.filter((guestgift) => {
+                    return gift._id.equals(guestgift.gift);
+                });
+
+                let newGift = {
+                    _id: gift._id,
+                    description: gift.description,
+                    user: gift.user,
+                    cant: gift.cant,
+                    alreadyDone:  done.length === 0 ? false: true
+                }
+
+                return newGift;
+
+            })
+
+            res.status(200).json({
+                response: giftsAux
+            })
+
         })
     })
 })
+
 
 
 /**PRIVATE */
@@ -56,6 +84,55 @@ app.get('/userId', mdAutentication.verificationToken, (req, res) => {
         res.status(200).json({
             response: gifts
         })
+
+
+    })
+})
+
+app.get('/summary', mdAutentication.verificationToken, (req, res) => {
+
+    var user = req.currentUser;
+
+    Gift.find({user: user._id},(err,gifts) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
+        GuestGift.find({user: user._id})
+        .populate('giftedBy')
+        .exec((err, guestGifts) => {
+            if (err) {
+                res.status(500).json({
+                    response: err
+                })
+            }
+
+            let giftsSummary = gifts.map((gift)=> {
+                let done= guestGifts.filter((guestgift) => {
+                    return gift._id.equals(guestgift.gift);
+                });
+
+                let summary = {
+                    _id: gift._id,
+                    description: gift.description,
+                    user: gift.user,
+                    cant: gift.cant,
+                    alreadyDone:  done.length === 0 ? false: true,
+                    giftedBy: done.length === 0 ?  null : done[0].giftedBy
+                }
+
+                return summary;
+
+            })
+
+            res.status(200).json({
+                response: giftsSummary
+            })
+
+        })
+
     })
 })
 
@@ -143,10 +220,10 @@ app.post('/toGift', (req, res) => {
     console.log(data);
 
     var gustGift = new GuestGift({
-        gifted_by: data.giftedBy,
+        giftedBy: data.giftedBy,
         gift: data.gift,
         cant: data.cant,
-        user: data.user,
+        user: data.userID,
         isMoney: data.isMoney
     });
 
