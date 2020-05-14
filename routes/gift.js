@@ -93,12 +93,16 @@ app.get('/summary', mdAutentication.verificationToken, (req, res) => {
 
     var user = req.currentUser;
 
+    console.log(user);
+
     Gift.find({user: user._id},(err,gifts) => {
         if (err) {
             res.status(500).json({
                 response: err
             })
         }
+
+        console.log('gift ',gifts)
 
         GuestGift.find({user: user._id})
         .populate('giftedBy')
@@ -109,10 +113,14 @@ app.get('/summary', mdAutentication.verificationToken, (req, res) => {
                 })
             }
 
+            console.log('guestgift ',guestGifts)
+
             let giftsSummary = gifts.map((gift)=> {
                 let done= guestGifts.filter((guestgift) => {
                     return gift._id.equals(guestgift.gift);
                 });
+
+                console.log('done ',done)
 
                 let summary = {
                     _id: gift._id,
@@ -216,8 +224,6 @@ app.put('/:id', (req, res) => {
  **/
 app.post('/toGift', (req, res) => {
     var data = req.body;
-
-    console.log(data);
 
     var gustGift = new GuestGift({
         giftedBy: data.giftedBy,

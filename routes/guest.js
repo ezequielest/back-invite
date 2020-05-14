@@ -4,7 +4,7 @@ var mdAutentication = require('../middleware/autentication');
 
 var Guest = require('./../models/guest.model')
 
-app.get('/', (req, res) => {
+app.get('/',mdAutentication.verificationToken, (req, res) => {
 
     Guest.find({},(err,guest) => {
         if (err) {
