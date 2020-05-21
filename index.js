@@ -20,11 +20,14 @@ var appRoutes = require ('./routes/app');
 var giftRoutes = require ('./routes/gift');
 
 //DB conexion
-mongoose.connect('mongodb://localhost:27017/invite', {useUnifiedTopology: true, useNewUrlParser: true}, (err,res)=> {
+mongoose.connect('mongodb://inviteuser:4739eerr@ds123534.mlab.com:23534/inviteapp' ,
+{  
+    useUnifiedTopology: true, 
+    useNewUrlParser: true
+}, (err,res)=> { 
     if (err) throw err;
     console.log('conexion exitosa a la db');
 })
-
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
