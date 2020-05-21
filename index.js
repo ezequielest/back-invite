@@ -20,7 +20,7 @@ var appRoutes = require ('./routes/app');
 var giftRoutes = require ('./routes/gift');
 
 //DB conexion
-mongoose.connect('mongodb://inviteuser:4739eerr@ds123534.mlab.com:23534/inviteapp' ,
+mongoose.connect('mongodb://localhost:27017/invite' ,
 {  
     useUnifiedTopology: true, 
     useNewUrlParser: true
