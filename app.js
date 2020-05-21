@@ -39,7 +39,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/gift', giftRoutes);
 app.use('/api/', appRoutes);
 
-var port = 3000;
+var port = (process.env.PORT || 3000);
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}!`)
 })
