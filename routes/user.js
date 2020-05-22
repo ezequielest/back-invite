@@ -1,10 +1,14 @@
 var express = require('express');
 const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
+var mdAutentication = require('../middleware/autentication');
 
 var app = express();
 
 var User = require('../models/user.model');
+var Gift = require('../models/gift.model');
+var GuestGift = require('../models/guestGift.model');
+var Guest = require('../models/guest.model');
 
 app.get('/', (req,res) => {
     
@@ -77,68 +81,6 @@ app.post('/login', (req, res) => {
 
     })
 })
-
-//public
-/*
-app.get('/:id', (req, res) => {
-    console.log('get user id')
-    var id = req.params.id;
-    console.log('id ', id)
-
-    User.findOne({_id: id},(err,user) => {
-        if (err) {
-            res.status(500).json({
-                response: err
-            })
-        }
-
-        //busco la lista de regalos para poder administrarlos
-        Gifts.find({}, function(err, gifts){
-            if (err) {
-                res.status(500).json({
-                    response: err
-                })
-            }
-
-            res.status(200).json({
-                response: user,
-                gifts: gifts
-            })
-
-        })
- 
-
-    })
-})
-*/
-
-/*
-app.get('/', (req, res) => {
-    console.log('get user')
-    User.find({},(err,user) => {
-        if (err) {
-            res.status(500).json({
-                response: err
-            })
-        }
-
-        res.status(200).json({
-            response: user
-        })
-    })
-})
-
-function findUser() {
-    User.find({},(err,user) => {
-        if (err) {
-            res.status(500).json({
-                response: err
-            })
-        }
-
-        return user
-    })
-}*/
 
 
 /**create */
@@ -231,6 +173,73 @@ app.delete('/:id', (req, res) => {
             message: 'user eliminada con exito'
         })
     })
+    
+})
+
+app.get('/summary',mdAutentication.verificationToken, (req, res) => {
+ 
+    var user = req.currentUser;
+    //var id = req.params.id;
+
+    
+    Gift.find({user: user._id},(err,gifts) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
+        console.log('gift ',gifts)
+
+        GuestGift.find({user: user._id})
+        .populate('giftedBy')
+        .exec((err, guestGifts) => {
+            if (err) {
+                res.status(500).json({
+                    response: err
+                })
+            }
+
+            console.log('guestgift ',guestGifts)
+
+            let giftsSummary = gifts.map((gift)=> {
+                let done= guestGifts.filter((guestgift) => {
+                    return gift._id.equals(guestgift.gift);
+                });
+
+                console.log('done ',done)
+
+                let summary = {
+                    _id: gift._id,
+                    description: gift.description,
+                    user: gift.user,
+                    cant: gift.cant,
+                    alreadyDone:  done.length === 0 ? false: true,
+                    giftedBy: done.length === 0 ?  null : done[0].giftedBy
+                }
+
+                return summary;
+
+            })
+
+            Guest.find({user: user._id},(err,guests) => {
+
+                res.status(200).json({
+                    response: {
+                        giftSummay: giftsSummary,
+                        guestSummary: guests
+                    }
+                })
+
+            })
+            
+
+
+        })
+
+    })
+
+   
     
 })
 
