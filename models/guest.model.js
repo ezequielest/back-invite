@@ -6,7 +6,6 @@ var guestModel = new Schema({
     description: {
         type: String,
         required: true,
-        unique: true
     },
     user: {
         type: Schema.Types.ObjectId,
@@ -19,6 +18,10 @@ var guestModel = new Schema({
     confirmed: {
         type: Boolean,
         required: true
+    },
+    cantConfirmed: {
+        type: Number,
+        default: 0
     }
 });
 

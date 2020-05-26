@@ -140,4 +140,34 @@ app.get('/userId/:id', (req, res) => {
     })
 })
 
+app.put('/confirm/public', (req, res) => {
+    var guestSelected = req.body.guest;
+    console.log('find by ',guestSelected);
+
+    Guest.findById(guestSelected._id,(err,guest) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+
+        console.log('guest ',guest)
+
+        guest.cantConfirmed = guestSelected.cantConfirmed;
+
+        guest.save((err, guest) => {
+            if (err) {
+                res.status(500).json({
+                    response: 'error al actualizar guest en la db'
+                })
+            }
+            res.status(200).json({
+                resonse: guest,
+                message: 'guest actualizado con exito'
+            })
+
+        })
+    })
+})
+
 module.exports = app;

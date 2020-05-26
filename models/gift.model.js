@@ -6,7 +6,6 @@ var GiftModel = new Schema({
     description: {
         type: String,
         required: true,
-        unique: true
     },
     user: {
         type: Schema.Types.ObjectId,
