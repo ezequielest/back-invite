@@ -181,7 +181,6 @@ app.get('/summary',mdAutentication.verificationToken, (req, res) => {
     var user = req.currentUser;
     //var id = req.params.id;
 
-    
     Gift.find({user: user._id},(err,gifts) => {
         if (err) {
             res.status(500).json({
@@ -226,21 +225,15 @@ app.get('/summary',mdAutentication.verificationToken, (req, res) => {
 
                 res.status(200).json({
                     response: {
-                        giftSummay: giftsSummary,
+                        giftSummary: giftsSummary,
                         guestSummary: guests
                     }
                 })
 
             })
             
-
-
         })
-
     })
-
-   
-    
 })
 
 module.exports = app;

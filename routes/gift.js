@@ -102,8 +102,6 @@ app.get('/summary', mdAutentication.verificationToken, (req, res) => {
             })
         }
 
-        console.log('gift ',gifts)
-
         GuestGift.find({user: user._id})
         .populate('giftedBy')
         .exec((err, guestGifts) => {
@@ -113,14 +111,10 @@ app.get('/summary', mdAutentication.verificationToken, (req, res) => {
                 })
             }
 
-            console.log('guestgift ',guestGifts)
-
             let giftsSummary = gifts.map((gift)=> {
                 let done= guestGifts.filter((guestgift) => {
                     return gift._id.equals(guestgift.gift);
                 });
-
-                console.log('done ',done)
 
                 let summary = {
                     _id: gift._id,
