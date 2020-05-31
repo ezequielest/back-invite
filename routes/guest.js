@@ -36,6 +36,25 @@ app.get('/userId', mdAutentication.verificationToken, (req, res) => {
     })
 })
 
+app.post('/search', (req, res) => {
+
+    body = req.body;
+    var busqueda = new RegExp(body.searchText,'i');
+
+    Guest.find({user: body.userID, description: busqueda },(err,guests) => {
+        if (err) {
+            res.status(500).json({
+                response: err
+            })
+        }
+        console.log(guests)
+
+        res.status(200).json({
+            response: guests
+        })
+    })
+})
+
 
 
 app.post('/', mdAutentication.verificationToken, (req, res) => {
